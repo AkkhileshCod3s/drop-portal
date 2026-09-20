@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Cancel01Icon } from '@hugeicons/core-free-icons';
+import { X } from 'lucide-react';
 
 import './SwipeToast.css';
 
@@ -304,7 +303,7 @@ export default function SwipeToast({
             ) : null}
             {closeButton ? (
               <button type="button" className="swipe-toast__close" aria-label="Close" onClick={() => close('close')}>
-                <HugeiconsIcon icon={Cancel01Icon} size={12} strokeWidth={2.5} />
+                <X size={12} strokeWidth={2.5} />
               </button>
             ) : null}
             <i ref={fuseRef} className="swipe-toast__fuse" aria-hidden="true" />

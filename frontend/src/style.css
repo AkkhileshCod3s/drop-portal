@@ -41,9 +41,9 @@ body {
   flex-direction: column;
 }
 
-/* Fixed GradientBlinds canvas layer behind all app content. z-index: -1 keeps
+/* Fixed Aurora canvas layer behind all app content. z-index: -1 keeps
    it above the body background but below the topbar, main, and footer. */
-.bg-gradientblinds {
+.bg-aurora {
   position: fixed;
   inset: 0;
   z-index: -1;
@@ -63,7 +63,7 @@ body {
 }
 
 /* Glassmorphic floating navbar: fixed, full width minus a 12px gap on the
-   top/left/right, no border, brand centered. */
+   top/left/right, no border, brand left / links + CTA right. */
 .topbar {
   position: fixed;
   top: 12px;
@@ -71,17 +71,31 @@ body {
   right: 12px;
   width: auto;
   z-index: 100;
-  padding: 12px 24px;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: rgba(12, 12, 14, 0.6);
+  justify-content: space-between;
+  gap: 16px;
+  background-color: rgba(12, 12, 14, 0.72);
   -webkit-backdrop-filter: blur(20px) saturate(120%);
   backdrop-filter: blur(20px) saturate(120%);
   border: none;
-  border-radius: 18px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 8px 32px rgba(0, 0, 0, 0.25);
   animation: page-fade-in 0.6s cubic-bezier(0.23, 1, 0.32, 1) backwards;
+}
+
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+/* Keep anchor-scroll targets clear of the fixed navbar. */
+#features,
+#upload,
+#how-it-works {
+  scroll-margin-top: 84px;
 }
 
 .brand {
@@ -102,12 +116,17 @@ body {
   border-radius: 8px;
 }
 
+/* Page container: always full width; sections inside center themselves and
+   carry their own max-widths. */
 .main {
   flex: 1;
+  width: 100%;
+  max-width: none;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 96px 16px 48px;
+  /* Clearance for the fixed navbar above the hero. */
+  padding: 96px 16px 40px;
 }
 
 .card {
@@ -157,9 +176,10 @@ select,
 
 /* TiltedCard wrapper around the main card: constrains the tilt plane to
    the card width so the whole card tilts as one piece. */
+/* Wrapper width only — the card's own styles are untouched. */
 .tilted-main-card {
   width: 100%;
-  max-width: 630px;
+  max-width: 640px;
 }
 
 h1 {
@@ -210,6 +230,445 @@ h1 {
 .dropzone.dragging {
   background: rgba(245, 233, 74, 0.08);
   color: var(--text);
+}
+
+.dropzone-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 10px;
+  border-radius: 12px;
+  background: rgba(234, 179, 8, 0.12);
+  color: #eab308;
+  transition: background 0.15s;
+}
+
+.dropzone-tile svg {
+  transition: transform 0.15s;
+}
+
+/* Column wrapper: keeps the upload card centered and stacks the marquee
+   full-width underneath it (`.main` is a flex row, so a fragment would put
+   the marquee beside the card). */
+.home-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: none;
+  overflow-x: hidden;
+}
+
+/* Decorative animated stroke word at the top of the hero, followed by the
+   tagline. The wrapper keeps its fixed height; the SVG scales down inside it
+   via preserveAspectRatio (max-width keeps the word compact). */
+.hero-word {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 520px;
+  height: 140px;
+  margin-bottom: 10px;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+}
+
+/* The SVG text doesn't reliably inherit font-family, so pin it to the app
+   sans-serif used by the navbar. */
+.hero-word .stroke-text__stroke,
+.hero-word .stroke-text__fill {
+  font-family: var(--font);
+}
+
+/* Fit the component's SVG to the fixed hero box instead of its computed
+   166px (fontSize * 1.3) height. */
+.hero-word .stroke-text,
+.hero-word .stroke-text__svg {
+  height: 100%;
+}
+
+@media (max-width: 640px) {
+  .hero-word {
+    max-width: 300px;
+    height: 80px;
+  }
+}
+
+/* Hero: word, tagline, subtitle and pill badges, all centered. */
+.hero {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-tagline {
+  margin: 6px 0 0;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.hero-subtitle {
+  margin: 8px 0 0;
+  font-size: 16px;
+  color: #d4d4d8;
+}
+
+.hero-badges {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.hero-badge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(12, 12, 14, 0.6);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: #d4d4d8;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Bento feature grid between the hero and the upload card: centered, 64px
+   gaps on both sides (flex column, so margins don't collapse). */
+.features-bento {
+  width: 100%;
+  max-width: 1000px;
+  margin-top: 64px;
+  margin-bottom: 64px;
+  text-align: center;
+}
+
+.bento-grid {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* Every card in a row shares the same height. */
+  grid-auto-rows: minmax(190px, auto);
+  align-items: stretch;
+  gap: 16px;
+  text-align: left;
+}
+
+/* Row spans: 2+1, 1+2, 2+1 so every row is full with six cards. */
+.bento-card--span2 {
+  grid-column: span 2;
+}
+
+.bento-card {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  border: none;
+  border-radius: 18px;
+  /* Perspective lives on the card so the inner layer can tilt in 3D. */
+  perspective: 800px;
+  background: none;
+}
+
+/* Glass layer on the tilting element, matching the other cards exactly. */
+.bento-card__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  padding: 24px;
+  border-radius: 18px;
+  background: rgba(12, 12, 14, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  backdrop-filter: blur(20px) saturate(120%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 8px 32px rgba(0, 0, 0, 0.25);
+  will-change: transform;
+}
+
+.bento-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(234, 179, 8, 0.14);
+  color: #eab308;
+}
+
+.bento-title {
+  margin: 16px 0 4px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.bento-line {
+  margin: 0;
+  font-size: 14px;
+  color: #d4d4d8;
+}
+
+/* Live detail: countdown pill (ticks each second via React state). */
+.bento-countdown {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(234, 179, 8, 0.12);
+  color: #eab308;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Live detail: file chip that fades out and back in every 4s (CSS loop). */
+.bento-burn {
+  display: block;
+  margin-top: 14px;
+}
+
+.bento-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #d4d4d8;
+  font-size: 13px;
+  animation: bento-chip-fade 4s ease-in-out infinite;
+}
+
+@keyframes bento-chip-fade {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  60%,
+  85% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Keep rows full when the grid has two columns: 2+... would overflow, so
+     wide cards take the full row and singles pair up. */
+  .bento-card--span2 {
+    grid-column: 1 / -1;
+  }
+
+  .bento-grid {
+    grid-auto-rows: minmax(160px, auto);
+  }
+}
+
+@media (max-width: 600px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: minmax(140px, auto);
+  }
+
+  .bento-card--span2 {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bento-card__inner {
+    transform: none !important;
+  }
+
+  .bento-chip {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Upload card section: full width, card centered via its wrapper. */
+.upload-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Velocity marquee below the upload card. Full-bleed: escapes the centered
+   column via 50% - 50vw so it stretches edge to edge (8px gutter each side,
+   via padding), with overflow hidden to avoid horizontal scrolling. */
+.velocity-marquee {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-top: 64px;
+  margin-bottom: 0;
+  padding: 0 8px;
+  overflow: hidden;
+}
+
+.velocity-marquee .parallax {
+  width: 100%;
+}
+
+.velocity-marquee .scroller {
+  font-family: var(--font);
+  color: rgba(212, 212, 216, 0.4);
+  filter: none;
+}
+
+.velocity-marquee .scroller span {
+  color: rgba(212, 212, 216, 0.4);
+}
+
+.velocity-marquee .scroller span b {
+  color: #eab308;
+  font-weight: 700;
+}
+
+/* ---- How it works ---- */
+
+.how-section {
+  width: 100%;
+  max-width: 960px;
+  margin-top: 64px;
+  text-align: center;
+}
+
+.section-label {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #eab308;
+}
+
+.section-heading {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+/* Folder (FolderFloat) replacing the three step cards. The wrapper reserves
+   just enough empty space above the folder for the pill cloud (one row on
+   desktop, two rows on tablet, three on phones — see the media queries), so
+   the pills never reach the heading, and lifts the section above its
+   neighbours only while the folder is open. */
+.how-folder {
+  padding-top: 110px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 1000px) {
+  .how-folder {
+    padding-top: 170px;
+  }
+}
+
+@media (max-width: 600px) {
+  .how-folder {
+    padding-top: 230px;
+  }
+}
+
+.how-section:has(.folder-float[data-open]) {
+  position: relative;
+  z-index: 5;
+}
+
+/* ---- Footer ---- */
+
+.site-footer {
+  width: 100%;
+  margin-top: 64px;
+  padding: 48px 16px;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.brand--footer {
+  justify-content: center;
+}
+
+.footer-line {
+  margin: 14px 0 0;
+  font-size: 15px;
+  color: #d4d4d8;
+}
+
+.footer-small {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: rgba(212, 212, 216, 0.72);
+}
+
+/* ---- Responsive: stack under 640px with 40px gaps ---- */
+
+@media (max-width: 640px) {
+  .main {
+    padding: 88px 12px 32px;
+  }
+
+  .hero-word {
+    margin-bottom: 8px;
+  }
+
+  .hero-tagline {
+    font-size: 22px;
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+  }
+
+  .features-bento {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  .upload-section {
+    margin-bottom: 40px;
+  }
+
+  .how-section {
+    margin-top: 40px;
+  }
+
+  .site-footer {
+    margin-top: 40px;
+    padding: 40px 16px;
+  }
+
+  .topbar-nav {
+    gap: 12px;
+  }
+}
+
+.dropzone:hover .dropzone-tile,
+.dropzone.dragging .dropzone-tile {
+  background: rgba(234, 179, 8, 0.2);
+}
+
+.dropzone:hover .dropzone-tile svg,
+.dropzone.dragging .dropzone-tile svg {
+  transform: translateY(-3px);
 }
 
 .dropzone p {
@@ -297,6 +756,18 @@ select {
 
 input[type='password'] {
   width: 100%;
+}
+
+/* Hide the up/down spin arrows on the max-downloads number input. */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 input:focus,

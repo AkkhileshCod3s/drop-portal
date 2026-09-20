@@ -202,7 +202,7 @@
 .glide-select__check {
   display: inline-flex;
   flex-shrink: 0;
-  color: var(--gs-accent);
+  color: #eab308;
   visibility: hidden;
 }
 

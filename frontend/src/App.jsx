@@ -1,17 +1,12 @@
 import { useState } from 'react'
 import { Link, Route, Routes, useParams, useSearchParams } from 'react-router-dom'
 import { deleteDrop } from './api.js'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { Delete02Icon, Tick02Icon } from '@hugeicons/core-free-icons'
+import { Trash2, Check } from 'lucide-react'
 import HoldButton from './HoldButton.jsx'
 import { ToastStack, useToasts } from './toast.jsx'
 import Home from './Home.jsx'
 import Download from './Download.jsx'
-import GradientBlinds from './GradientBlinds.jsx'
-
-// Module-level constant: GradientBlinds re-inits its WebGL context when the
-// gradientColors identity changes, so it must not be recreated per render.
-const GRADIENT_COLORS = ['#eab308', '#916f08']
+import Aurora from './Aurora.jsx'
 
 
 // Small confirm-and-delete page for the private delete link:
@@ -50,8 +45,8 @@ function Delete({ notify }) {
             radius={9}
             holdTime={1200}
             doneLabel="Deleted"
-            icon={<HugeiconsIcon icon={Delete02Icon} size={16} strokeWidth={2} />}
-            doneIcon={<HugeiconsIcon icon={Tick02Icon} size={16} strokeWidth={2} />}
+            icon={<Trash2 size={16} strokeWidth={2} />}
+            doneIcon={<Check size={16} strokeWidth={2} />}
             onHold={handleDelete}
           >
             Hold to delete
@@ -73,28 +68,13 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className="bg-gradientblinds" aria-hidden="true">
-        <GradientBlinds
-          gradientColors={GRADIENT_COLORS}
-          angle={20}
-          noise={0.5}
-          blindCount={16}
-          blindMinWidth={60}
-          spotlightRadius={1}
-          spotlightSoftness={1}
-          spotlightOpacity={1}
-          mouseDampening={0.15}
-          distortAmount={0}
-          shineDirection="left"
-          mixBlendMode="lighten"
+      <div className="bg-aurora" aria-hidden="true">
+        <Aurora
+          colorStops={['#eab308', '#f97316', '#eab308']}
+          speed={1.2}
+          blend={0.75}
         />
       </div>
-      <header className="topbar">
-        <Link to="/" className="brand">
-          <img src="/logo.png" alt="" className="logo" />
-          <span>dropportal</span>
-        </Link>
-      </header>
       <main className="main">
         <Routes>
           <Route path="/" element={<Home notify={notify} />} />

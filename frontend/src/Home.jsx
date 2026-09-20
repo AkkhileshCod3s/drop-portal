@@ -1,13 +1,20 @@
-import { useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
+import { motion } from 'motion/react'
+import useTilt from './useTilt.js'
 import { Link } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
+import { CloudUpload, Clock, Lock, Download, Flame, QrCode, Files } from 'lucide-react'
 import { createDrop, deleteDrop, formatBytes, uploadAll } from './api.js'
 import BorderGlow from './BorderGlow.jsx'
 import FlowButton from './FlowButton.jsx'
 import GlideSelect from './GlideSelect.jsx'
 import HoldButton from './HoldButton.jsx'
 import SpringCheck from './SpringCheck.jsx'
+import FolderFloat from './FolderFloat.jsx'
+import NavPills from './NavPills.jsx'
+import ScrollVelocity from './ScrollVelocity.jsx'
 import TiltedCard from './TiltedCard.jsx'
+import StrokeText from './StrokeText.jsx'
 
 const EXPIRY_OPTIONS = [
   { label: '1 hour', hours: 1 },
@@ -19,6 +26,143 @@ const EXPIRY_SELECT_OPTIONS = EXPIRY_OPTIONS.map((o) => ({
   value: String(o.hours),
   label: o.label,
 }))
+
+// Bento grid feature cards, ordered to fill every grid row. `span` sets the
+// column span; `detail` marks the two cards with live display-only details.
+const BENTO_ITEMS = [
+  { id: 'expiring', icon: Clock, title: 'Auto-expiring links', line: 'Choose 1 hour, 24 hours, or 7 days.', span: 2, detail: 'countdown' },
+  { id: 'password', icon: Lock, title: 'Password protection', line: 'Lock any drop with a password.', span: 1 },
+  { id: 'limits', icon: Download, title: 'Download limits', line: 'Cap how many times a file can be downloaded.', span: 1 },
+  { id: 'burn', icon: Flame, title: 'Burn after reading', line: 'Delete it right after the first download.', span: 2, detail: 'chip' },
+  { id: 'qr', icon: QrCode, title: 'QR code sharing', line: 'Scan to open the link on your phone.', span: 2 },
+  { id: 'files', icon: Files, title: 'Multiple files', line: 'Send up to 20 files in one link.', span: 1 },
+]
+
+const MARQUEE_TEXTS = [
+  'Upload • Share • Vanish •',
+  'No account needed • Auto-deletes • Password protected •',
+]
+
+const MARQUEE_VELOCITY_MAPPING = { input: [0, 1000], output: [0, 0] }
+
+const STEPS = [
+  '1 · Upload files, pick an expiry',
+  '2 · Share the link or QR code',
+  '3 · Files vanish when time is up',
+]
+
+// Picks the pill-cloud spread from the viewport width so the three pills sit
+// in one row on desktop and wrap on smaller screens.
+function useResponsiveSpread() {
+  const get = () => {
+    const w = typeof window === 'undefined' ? 1024 : window.innerWidth
+    if (w > 1000) return 370
+    if (w >= 600) return 250
+    return 140
+  }
+  const [spread, setSpread] = useState(get)
+  useEffect(() => {
+    const onResize = () => setSpread(get())
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  return spread
+}
+
+// Isolated so page re-renders (uploads, countdown ticks) never restart the physics.
+const HowItWorksFolder = memo(function HowItWorksFolder() {
+  const spread = useResponsiveSpread()
+  return (
+    <FolderFloat
+      items={STEPS}
+      label="How it works"
+      sublabel=""
+      trigger="hover"
+      closeOnSelect={true}
+      physics={true}
+      drift={0.5}
+      folderColor="#ab8308"
+      frontColor="#eab308"
+      paperColor="#f5f5f5"
+      itemColor="#ffffff"
+      itemTextColor="#18181b"
+      labelColor="#000000"
+      width={200}
+      height={148}
+      radius={14}
+      spread={spread}
+      lift={26}
+      tilt={8}
+      flapAngle={34}
+      restAngle={16}
+      openDuration={520}
+      stagger={45}
+      bounce={0.3}
+    />
+  )
+})
+
+// Own component + state so its 1-second ticks don't re-render the whole page.
+function CountdownPill() {
+  const reduceMotion =
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const [secondsLeft, setSecondsLeft] = useState(23 * 3600 + 59 * 60 + 59)
+
+  useEffect(() => {
+    if (reduceMotion) return undefined
+    const t = setInterval(() => {
+      setSecondsLeft((s) => (s > 0 ? s - 1 : 0))
+    }, 1000)
+    return () => clearInterval(t)
+  }, [reduceMotion])
+
+  const countdown = [
+    Math.floor(secondsLeft / 3600),
+    Math.floor((secondsLeft % 3600) / 60),
+    secondsLeft % 60,
+  ]
+    .map((n) => String(n).padStart(2, '0'))
+    .join(':')
+
+  return (
+    <span className="bento-countdown" aria-hidden="true">
+      {countdown}
+    </span>
+  )
+}
+
+// Feature card with the same tilt effect as the upload card (useTilt copies
+// TiltedCard's math and springs). Skipped under prefers-reduced-motion and
+// resets to flat on mouse leave.
+function BentoCard({ item, rotateAmplitude = 2 }) {
+  const tilt = useTilt(rotateAmplitude)
+
+  return (
+    <article
+      ref={tilt.ref}
+      className={`bento-card${item.span === 2 ? ' bento-card--span2' : ''}`}
+      onMouseMove={tilt.onMouseMove}
+      onMouseLeave={tilt.onMouseLeave}
+    >
+      <motion.div className="bento-card__inner" style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY }}>
+        <span className="bento-icon" aria-hidden="true">
+          <item.icon size={28} strokeWidth={1.8} />
+        </span>
+        <h3 className="bento-title">{item.title}</h3>
+        <p className="bento-line">{item.line}</p>
+        {item.detail === 'countdown' && <CountdownPill />}
+        {item.detail === 'chip' && (
+          <span className="bento-burn" aria-hidden="true">
+            <span className="bento-chip">report.pdf</span>
+          </span>
+        )}
+      </motion.div>
+    </article>
+  )
+}
+
 
 export default function Home({ notify }) {
   const [files, setFiles] = useState([])
@@ -35,6 +179,15 @@ export default function Home({ notify }) {
   const inputRef = useRef(null)
 
   const totalSize = files.reduce((sum, f) => sum + f.size, 0)
+
+  useEffect(() => {
+    const hash = window.location.hash
+    if (!hash) return undefined
+    const t = setTimeout(() => {
+      document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' })
+    }, 0)
+    return () => clearTimeout(t)
+  }, [])
 
   function addFiles(incoming) {
     setError('')
@@ -149,6 +302,56 @@ export default function Home({ notify }) {
   }
 
   return (
+    <div className="home-column">
+      <header className="topbar">
+        <Link to="/" className="brand">
+          <img className="logo" src="/logo.png" alt="" />
+          DropPortal
+        </Link>
+        <nav className="topbar-nav" aria-label="Main">
+          <NavPills />
+        </nav>
+      </header>
+
+      <section className="hero" aria-label="Drop Portal">
+      <div className="hero-word" aria-hidden="true">
+        <StrokeText
+          text="Drop Portal"
+          strokeColor="#ffc100"
+          fillColor="#ffc100"
+          strokeWidth={1.4}
+          drawDuration={2}
+          fillDelay={0.2}
+          stagger={0.05}
+          ease="power2.out"
+          trigger="loop"
+          fillMode="wipe"
+          fontSize={128}
+          fontWeight={800}
+          letterSpacing={-4}
+          reverse={false}
+        />
+      </div>
+        <p className="hero-tagline">Share files that disappear.</p>
+        <p className="hero-subtitle">No account. No trace. Your files delete themselves.</p>
+        <div className="hero-badges" aria-hidden="false">
+          <span className="hero-badge">No account needed</span>
+          <span className="hero-badge">Auto-deletes</span>
+          <span className="hero-badge">Password protected</span>
+        </div>
+      </section>
+
+      <section className="features-bento" id="features" aria-label="Features">
+        <p className="section-label">Features</p>
+        <h2 className="section-heading">Everything you need, nothing you don't</h2>
+        <div className="bento-grid">
+          {BENTO_ITEMS.map((item) => (
+            <BentoCard key={item.id} item={item} rotateAmplitude={2} />
+          ))}
+        </div>
+      </section>
+
+    <section className="upload-section" id="upload">
     <TiltedCard
       className="tilted-main-card"
       containerHeight="auto"
@@ -199,6 +402,9 @@ export default function Home({ notify }) {
               addFiles(Array.from(e.dataTransfer.files || []))
             }}
           >
+            <span className="dropzone-tile" aria-hidden="true">
+              <CloudUpload size={30} />
+            </span>
             <p><strong>Drag files here</strong> or click to choose</p>
             <p className="small">Up to 20 files per drop</p>
             <input
@@ -279,6 +485,7 @@ export default function Home({ notify }) {
             <input
               type="number"
               min="1"
+              className="no-spinner"
               value={maxDownloads}
               onChange={(e) => setMaxDownloads(e.target.value)}
               placeholder="unlimited"
@@ -321,5 +528,25 @@ export default function Home({ notify }) {
         </div>
       </div>
     </TiltedCard>
+    </section>
+
+      <section className="how-section" id="how-it-works" aria-label="How it works">
+        <p className="section-label">How it works</p>
+        <h2 className="section-heading">Three steps to a vanished file</h2>
+        <div className="how-folder">
+          <HowItWorksFolder />
+        </div>
+      </section>
+
+      <div className="velocity-marquee">
+        <ScrollVelocity
+          texts={MARQUEE_TEXTS}
+          velocity={40}
+          className="marquee-text"
+          numCopies={4}
+          velocityMapping={MARQUEE_VELOCITY_MAPPING}
+        />
+      </div>
+    </div>
   )
 }

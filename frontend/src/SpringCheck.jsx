@@ -1,13 +1,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { animate, useMotionValue, useMotionValueEvent, useReducedMotion } from 'motion/react';
-import { Tick02Icon } from '@hugeicons/core-free-icons';
 
 import './SpringCheck.css';
 
 const VISUAL_DURATION = 0.2;
 const RULE_END = 0.84;
 const SWELL = 0.35;
-const TICK_PATH = String(Tick02Icon[0][1].d);
+// Lucide `Check` icon path (24×24 stroke icon), same viewBox the tick svg uses.
+const TICK_PATH = 'M20 6 9 17l-5-5';
 const ORIGIN = { left: 'left center', center: 'center', right: 'right center', none: 'left center' };
 
 const clamp01 = value => Math.min(1, Math.max(0, value));

@@ -1,6 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowDown01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+import { ChevronDown, Check } from 'lucide-react';
 
 import './GlideSelect.css';
 
@@ -273,7 +272,7 @@ export default function GlideSelect({
           {selected >= 0 ? items[selected].label : placeholder}
         </span>
         <span className="glide-select__chevron" aria-hidden="true">
-          <HugeiconsIcon icon={ArrowDown01Icon} size={12} strokeWidth={2.5} />
+          <ChevronDown size={12} strokeWidth={2.5} />
         </span>
       </button>
       {phase !== 'closed' ? (
@@ -307,7 +306,7 @@ export default function GlideSelect({
                 <span className="glide-select__name">{it.label}</span>
                 {showTags && it.tag ? <span className="glide-select__tag">{it.tag}</span> : null}
                 <span className="glide-select__check" data-on={i === selected ? '' : undefined} aria-hidden="true">
-                  <HugeiconsIcon icon={Tick02Icon} size={13} strokeWidth={2.5} />
+                  <Check size={13} strokeWidth={2.5} />
                 </span>
               </div>
             ))}

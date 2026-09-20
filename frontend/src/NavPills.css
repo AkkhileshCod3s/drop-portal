@@ -1,0 +1,59 @@
+/* Animated pill nav inside the navbar. Every rule is scoped under .nav-pills
+   so nothing leaks into the rest of the navbar or the app. */
+
+.nav-pills {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-pill {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  min-width: 40px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-pill:focus-visible {
+  outline: 2px solid #eab308;
+  outline-offset: 2px;
+}
+
+.nav-pill--active {
+  background: rgba(234, 179, 8, 0.16);
+  color: #eab308;
+}
+
+.nav-pill__label {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+@media (max-width: 520px) {
+  .nav-pill {
+    padding: 0 9px;
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-pill {
+    transition: none;
+  }
+}
