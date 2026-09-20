@@ -1,0 +1,122 @@
+/* FlowButton — plain-CSS conversion of the Tailwind version, with colors
+   adapted for the dark theme: light text/border at rest, light fill circle on
+   hover with dark text. Animation timings and easings match the original. */
+.flow-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: background 200ms ease,
+    color 600ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-radius 600ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.flow-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.flow-button:hover:not(:disabled) {
+  border-color: transparent;
+  border-radius: 12px;
+  color: #1a1210;
+}
+
+.flow-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.flow-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.flow-button__arrow {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  z-index: 9;
+  stroke: currentColor;
+  fill: none;
+  transition: all 800ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.flow-button__arrow--left {
+  left: -25%;
+}
+
+.flow-button:hover:not(:disabled) .flow-button__arrow--left {
+  left: 16px;
+}
+
+.flow-button__arrow--right {
+  right: 16px;
+}
+
+.flow-button:hover:not(:disabled) .flow-button__arrow--right {
+  right: -25%;
+}
+
+.flow-button__text {
+  position: relative;
+  z-index: 1;
+  transform: translateX(-12px);
+  transition: transform 800ms ease-out;
+}
+
+.flow-button:hover:not(:disabled) .flow-button__text {
+  transform: translateX(12px);
+}
+
+.flow-button__circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #eab308;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: width 800ms cubic-bezier(0.19, 1, 0.22, 1),
+    height 800ms cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 800ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.flow-button:hover:not(:disabled) .flow-button__circle {
+  width: 220px;
+  height: 220px;
+  opacity: 1;
+}
+
+/* Danger variant: same pill size, radius and border as the default button,
+   with a subtle red-tinted outline and text for destructive actions. */
+.flow-button--danger {
+  color: #e06c6c;
+  text-decoration: none;
+}
+
+.flow-button--danger:hover:not(:disabled) {
+  color: #ffffff;
+}
+
+.flow-button--danger .flow-button__circle {
+  background: #8b1a1a;
+}
+
+.flow-button--danger:focus-visible {
+  outline: none;
+}

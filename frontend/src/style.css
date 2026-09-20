@@ -1,0 +1,590 @@
+:root {
+  --bg: #1a1a1f;
+  --card: #24242b;
+  --card-raised: rgba(255, 255, 255, 0.06);
+  --text: #d4d4d8;
+  --muted: #d4d4d8;
+  --accent: #e8825a;
+  --accent-strong: #d96f45;
+  --border: rgba(234, 179, 8, 0.35);
+  --danger: #fca5a5;
+  --ok: #4ade80;
+  --radius: 14px;
+  --radius-small: 9px;
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fixed GradientBlinds canvas layer behind all app content. z-index: -1 keeps
+   it above the body background but below the topbar, main, and footer. */
+.bg-gradientblinds {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+/* Page-load fade-in for the navbar and cards. */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Glassmorphic floating navbar: fixed, full width minus a 12px gap on the
+   top/left/right, no border, brand centered. */
+.topbar {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  width: auto;
+  z-index: 100;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(12, 12, 14, 0.6);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  backdrop-filter: blur(20px) saturate(120%);
+  border: none;
+  border-radius: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  animation: page-fade-in 0.6s cubic-bezier(0.23, 1, 0.32, 1) backwards;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.2px;
+}
+
+.logo {
+  width: 30px;
+  height: 30px;
+  display: block;
+  border-radius: 8px;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 96px 16px 48px;
+}
+
+.card {
+  /* Dark glass: the bright animated background stays readable under text. */
+  background-color: rgba(12, 12, 14, 0.72);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  backdrop-filter: blur(24px) saturate(120%);
+  border: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 8px 32px rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius);
+  padding: 28px;
+  width: 100%;
+  max-width: 630px;
+  animation: page-fade-in 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.12s backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topbar,
+  .card {
+    animation: none;
+  }
+}
+
+.card.center {
+  text-align: center;
+}
+
+/* Inner surfaces: dark glass so text stays readable over the bright
+   background. */
+input[type='text'],
+input[type='password'],
+input[type='number'],
+select,
+.filelist li,
+.progress {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.card.center .btn {
+  margin-top: 10px;
+}
+
+.card.center .hold-button {
+  margin-top: 10px;
+}
+
+/* TiltedCard wrapper around the main card: constrains the tilt plane to
+   the card width so the whole card tilts as one piece. */
+.tilted-main-card {
+  width: 100%;
+  max-width: 630px;
+}
+
+h1 {
+  font-size: 22px;
+  margin: 0 0 8px;
+  color: #ffffff;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 13px;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 14px;
+  margin: 10px 0 0;
+}
+
+.ok {
+  color: var(--ok);
+}
+
+.dropzone-glow {
+  margin-top: 18px;
+}
+
+.dropzone {
+  border: none;
+  border-radius: var(--radius-small);
+  padding: 34px 16px;
+  text-align: center;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dropzone:hover,
+.dropzone:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  outline: none;
+}
+
+.dropzone.dragging {
+  background: rgba(245, 233, 74, 0.08);
+  color: var(--text);
+}
+
+.dropzone p {
+  margin: 4px 0;
+}
+
+.filelist {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.filelist li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: var(--radius-small);
+  margin-bottom: 8px;
+  min-width: 0;
+}
+
+/* Compact HoldButton for the per-file remove action. */
+.filelist .hold-button {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.total {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.options {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.options label,
+.options .field,
+.passwordbox label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Make the expiry GlideSelect fill its grid cell like the other inputs. */
+.options .glide-select,
+.options .glide-select__trigger {
+  width: 100%;
+}
+
+.options .glide-select__trigger {
+  justify-content: space-between;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='number'],
+select {
+  background: rgba(0, 0, 0, 0.35);
+  border: none;
+  border-radius: var(--radius-small);
+  color: #ffffff;
+  padding: 9px 11px;
+  font-size: 14px;
+  font-family: var(--font);
+}
+
+input[type='password'] {
+  width: 100%;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+button:focus-visible {
+  outline: none;
+}
+
+input::placeholder {
+  color: #a1a1aa;
+}
+
+input:disabled,
+select:disabled,
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Row spacing for the SpringCheck delete-after-download toggle. */
+.spring-check-row {
+  margin-top: 12px;
+}
+
+.progress {
+  margin-top: 18px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: #eab308;
+  border-radius: 999px;
+  transition: width 0.15s ease;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 11px 20px;
+  border: none;
+  border-radius: var(--radius-small);
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s, transform 0.05s;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+.btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn:focus-visible:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1a1210;
+}
+
+.btn.primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link:hover {
+  color: var(--accent-strong);
+}
+
+/* Centers the action buttons row (Send more files / Open delete page). */
+.create-row {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.linkrow {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.linkrow .link {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.linkrow .btn {
+  margin-top: 0;
+  flex-shrink: 0;
+}
+
+.qr {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* White padded box so phone cameras can scan the QR code on the dark theme. */
+.qrbox {
+  background: #ffffff;
+  padding: 12px;
+  border-radius: var(--radius-small);
+  line-height: 0;
+}
+
+.note {
+  margin: 16px 0 0;
+  padding: 11px 14px;
+  background: rgba(232, 130, 90, 0.14);
+  border: 1px solid rgba(217, 111, 69, 0.45);
+  border-radius: var(--radius-small);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.passwordbox {
+  margin-top: 16px;
+}
+
+/* Fixed stack for success toasts (SwipeToast inline mode). */
+.toast-stack {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 356px;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+
+.toast-stack .swipe-toast {
+  pointer-events: auto;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 20px 16px;
+  }
+
+  .linkrow {
+    flex-direction: column;
+  }
+
+  .create-row {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* ---- Glass overrides for component surfaces (loaded last on purpose) ---- */
+
+/* Dropzone panel: glass only — no border of its own. The BorderGlow ring is
+   the single glowing edge in the app. */
+.dropzone-glow.border-glow-card {
+  background: rgba(0, 0, 0, 0.35);
+  border-color: transparent;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+/* Select trigger: dark glass, no ring. */
+.glide-select__trigger {
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.glide-select__trigger:not(:disabled):hover,
+.glide-select__trigger[aria-expanded='true'] {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Dropdown menu: near-opaque dark glass above everything else in the card so
+   option text is never washed out by the checkbox label behind it. z-index
+   raised above the card content; the menu is absolutely positioned from the
+   inline-block .glide-select root, so no overflow: hidden clips it. */
+.glide-select {
+  position: relative;
+  z-index: 30;
+}
+
+.glide-select__menu {
+  z-index: 40;
+  background: rgba(24, 24, 28, 0.95);
+  border: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 8px 24px rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+}
+
+.glide-select__option {
+  color: #ffffff;
+}
+
+.glide-select__pill {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* Checkbox: dark glass box, neutral light ring, lightens on hover. */
+.spring-check__box {
+  background: rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+.spring-check__ring {
+  box-shadow: inset 0 0 0 var(--sc-ring) rgba(255, 255, 255, 0.35);
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .spring-check:not(:disabled):hover .spring-check__box {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.spring-check:focus-visible .spring-check__press {
+  outline: none;
+}
+
+.spring-check:focus-visible .spring-check__box {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Hold buttons: glass surface, no ring; lightens on hover. */
+.hold-button {
+  --hb-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hold-button:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.hold-button:focus-visible {
+  outline: none;
+}
+
+.hold-button:focus-visible:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
