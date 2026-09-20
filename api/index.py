@@ -408,6 +408,19 @@ def cron_cleanup():
 @app.errorhandler(Exception)
 def handle_exception(e):
     if isinstance(e, HTTPException):
+        if e.code == 404:
+            # TEMPORARY DEBUG: shows which path/method Flask actually received,
+            # to diagnose Vercel routing. Remove path/method once routing works.
+            return (
+                jsonify(
+                    {
+                        "error": e.description,
+                        "path": request.path,
+                        "method": request.method,
+                    }
+                ),
+                404,
+            )
         return json_error(e.code or 500, e.description or "error")
     app.logger.exception("unhandled error")
     if isinstance(e, KeyError):
